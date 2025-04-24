@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Model Information Card -->
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Model Artificial Neural Network (ANN)</h5>
+                <p class="card-text">
+                    Model ini menggunakan arsitektur neural network dengan:
+                    <ul>
+                        <li>Input Layer: 2 neurons (tahun dan komoditi)</li>
+                        <li>Hidden Layer 1: 64 neurons dengan aktivasi ReLU</li>
+                        <li>Hidden Layer 2: 32 neurons dengan aktivasi ReLU</li>
+                        <li>Output Layer: 1 neuron (prediksi produksi)</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prediction Table -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Tabel Prediksi Produksi Tahun 2025</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Komoditi</th>
+                                <th>Prediksi Produksi 2025 (Kuintal)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prediction in predictions %}
+                            <tr>
+                                <td>{{ prediction.Komoditi }}</td>
+                                <td>{{ prediction.Prediksi_Produksi_2025 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prediction Bar Chart -->
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Grafik Prediksi Produksi 2025</h5>
+                <canvas id="predictionChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var labels = [];
+    {% for prediction in predictions %}
+        labels.push('{{ prediction.Komoditi }}');
+    {% endfor %}
+    
+    var values = [];
+    {% for prediction in predictions %}
+        values.push(parseFloat('{{ prediction.Prediksi_Produksi_2025 }}'.replace(',', '')));
+    {% endfor %}
+
+    var predictionCtx = document.getElementById('predictionChart').getContext('2d');
+    new Chart(predictionCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Prediksi Produksi 2025 (Kuintal)',
+                data: values,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
